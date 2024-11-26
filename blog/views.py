@@ -13,10 +13,21 @@ def index(request):
 
 
 def create(request):
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         title = request.POST['title']
         content = request.POST['content']
-        article = Article(title=title, content=content)
+        check_box = True if 'check_box' in request.POST else False
+        multiple_check_box = request.POST.getlist('multiple_check_box')
+        pulldown = request.POST['pulldown']
+        radio = request.POST['radio']
+        article = Article(
+            title=title,
+            content=content,
+            check_box=check_box,
+            multiple_check_box=multiple_check_box,
+            pulldown=pulldown,
+            radio=radio
+        )
         article.save()
         return redirect('index')
     else:
