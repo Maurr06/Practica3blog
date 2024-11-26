@@ -14,21 +14,10 @@ def index(request):
 
 def create(request):
     if request.method == 'POST':
-        title = request.POST['title']
-        content = request.POST['content']
-        check_box = True if 'check_box' in request.POST else False
-        multiple_check_box = request.POST.getlist('multiple_check_box')
-        pulldown = request.POST['pulldown']
-        radio = request.POST['radio']
-        article = Article(
-            title=title,
-            content=content,
-            check_box=check_box,
-            multiple_check_box=multiple_check_box,
-            pulldown=pulldown,
-            radio=radio
-        )
-        article.save()
+        obj = Article()
+        article = ArticleForm(request.POST, instance=obj)
+        if article.is_valid():  # Asegurarse de que el formulario es válido antes de guardar
+            article.save()
         return redirect('index')
     else:
         params = {
@@ -47,19 +36,15 @@ def detail(request, article_id):
 
 def edit(request, article_id):
     article = Article.objects.get(id=article_id)
-    if (request.method == 'POST'):
-        article.title = request.POST['title']
-        article.content = request.POST['content']
-        article.save()
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():  # Asegurarse de que el formulario es válido antes de guardar
+            form.save()
         return redirect('detail', article_id)
     else:
-        form = ArticleForm(initial={
-            'title': article.title,
-            'content': article.content,
-            })
         params = {
             'article': article,
-            'form': form,
+            'form': ArticleForm(instance=article),
         }
         return render(request, 'blog/edit.html', params)
 
